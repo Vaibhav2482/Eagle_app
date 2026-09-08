@@ -48,6 +48,7 @@ const ApplyModal = ({ isOpen, onClose }: ApplyModalProps) => {
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const closeTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
@@ -55,6 +56,29 @@ const ApplyModal = ({ isOpen, onClose }: ApplyModalProps) => {
       document.body.style.overflow = "";
     };
   }, [isOpen]);
+
+  // If the modal is closed (manually or otherwise) before the post-submit
+  // auto-close timer fires, cancel it -- otherwise it can yank the modal
+  // shut later while the user is filling out a second application, and
+  // leave a stale "submitted" banner showing on the fresh form.
+  useEffect(() => {
+    if (!isOpen) {
+      if (closeTimeoutRef.current !== null) {
+        window.clearTimeout(closeTimeoutRef.current);
+        closeTimeoutRef.current = null;
+      }
+      setSubmitted(false);
+      setSubmitError("");
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current !== null) {
+        window.clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -173,9 +197,13 @@ const ApplyModal = ({ isOpen, onClose }: ApplyModalProps) => {
       setResumeFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
 
-      setTimeout(() => {
+      if (closeTimeoutRef.current !== null) {
+        window.clearTimeout(closeTimeoutRef.current);
+      }
+      closeTimeoutRef.current = window.setTimeout(() => {
         setSubmitted(false);
         onClose();
+        closeTimeoutRef.current = null;
       }, 2200);
     } catch (error) {
       console.error("Failed to submit application:", error);

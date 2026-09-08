@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import eagle from "../assets/logo_1.png";
 import ApplyModal from "./ApplyModal";
@@ -8,6 +8,7 @@ const Header = () => {
   const [isSticky, setIsSticky] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
   const [isApplyOpen, setIsApplyOpen] = useState(false);
+  const closeApplyModal = useCallback(() => setIsApplyOpen(false), []);
 
   const navItems = [
     { label: "Home", href: "#hero" },
@@ -232,7 +233,7 @@ const Header = () => {
         )}
       </AnimatePresence>
 
-      <ApplyModal isOpen={isApplyOpen} onClose={() => setIsApplyOpen(false)} />
+      <ApplyModal isOpen={isApplyOpen} onClose={closeApplyModal} />
     </header>
   );
 };
