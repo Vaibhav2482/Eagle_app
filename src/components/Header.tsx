@@ -51,12 +51,13 @@ const Header = () => {
   }, []);
 
   return (
-    <header
-      className={`fixed w-full top-0 z-50 border-b transition-all duration-300 ${
-        isSticky
-          ? "bg-white/95 backdrop-blur-md shadow-lg border-gray-100"
-          : "bg-white border-transparent"
-      }`}
+    <>
+      <header
+        className={`fixed w-full top-0 z-50 border-b transition-all duration-300 ${
+          isSticky
+            ? "bg-white/95 backdrop-blur-md shadow-lg border-gray-100"
+            : "bg-white border-transparent"
+        }`}
     >
       <nav
         className={`w-full flex justify-between items-center px-3 sm:px-4 lg:px-6 transition-all duration-300 ${
@@ -233,8 +234,9 @@ const Header = () => {
         )}
       </AnimatePresence>
 
+      </header>
       <ApplyModal isOpen={isApplyOpen} onClose={closeApplyModal} />
-    </header>
+    </>
   );
 };
 
